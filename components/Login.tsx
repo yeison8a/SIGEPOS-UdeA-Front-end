@@ -7,13 +7,11 @@ export default function Login() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isRegister, setIsRegister] = useState(false);
 
-  // Estados para los campos
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 
-  // Limpiar campos al cambiar de modo
   const handleModeChange = (register: boolean) => {
     setIsRegister(register);
     setEmail("");
@@ -22,7 +20,6 @@ export default function Login() {
     setError("");
   };
 
-  // Validación en tiempo real
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
     if (isRegister && confirmPassword && e.target.value !== confirmPassword) {
@@ -41,9 +38,54 @@ export default function Login() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    //lógica registro o login
+    if(isRegister){
+      if(password !== confirmPassword){
+        setError("Las contraseñas no coinciden");
+        return;
+      }
+      setError("");
+      try{
+        const response = await fetch("http://localhost:8080/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            correo: email, 
+            contrasena: password 
+          }),
+        });
+        const data = await response.json();
+        if(response.ok){
+          alert("Registro exitoso. Ahora puedes iniciar sesión.");
+        } else {
+          setError(data.message || "Error en el registro");
+        }
+      } catch (err) {
+        setError("Error de conexión");
+      }
+    } else {
+      setError("");
+      try{
+        const response = await fetch("http://localhost:8080/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            correo: email, 
+            contrasena: password 
+          }),
+      });
+      const data = await response.json();
+      if(response.ok){
+        alert("Inicio de sesión exitoso");
+        //guardar token
+      } else {
+        setError(data.message || "Credenciales inválidas");
+      }
+    } catch (err) {
+      setError("Error de conexión");
+    }
+  }
   };
 
   return (
@@ -103,7 +145,7 @@ export default function Login() {
                 placeholder="Contraseña"
                 className="w-full px-4 py-2 border-b border-gray-300 focus:outline-none focus:border-green-900 bg-transparent"
                 value={password}
-                onChange={isRegister ? handlePasswordChange : e => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
                 required
               />
               <span
