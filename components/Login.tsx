@@ -1,8 +1,10 @@
 'use client'
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isRegister, setIsRegister] = useState(false);
@@ -11,6 +13,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+
 
   const handleModeChange = (register: boolean) => {
     setIsRegister(register);
@@ -77,7 +80,7 @@ export default function Login() {
       });
       const data = await response.json();
       if(response.ok){
-        alert("Inicio de sesión exitoso");
+        router.push("/barra");
         //guardar token
       } else {
         setError(data.message || "Credenciales inválidas");
