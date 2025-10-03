@@ -1,10 +1,7 @@
-// components/UploadSection.tsx
 "use client";
 
-
-
 import { useState } from "react";
-import { Plus, Info } from "lucide-react"; // usa lucide-react para íconos
+import { Plus, Info } from "lucide-react"; 
 import FileUploadField from "./FileUploadField";
 
 export default function UploadSection() {
@@ -31,9 +28,9 @@ export default function UploadSection() {
       )}
 
       {/* Campos de subida de archivos */}
-      <FileUploadField label="Acta de aprobación del comité de ética" required />
-      <FileUploadField label="Carta de aceptación del asesor" />
-      <FileUploadField label="Documento de viabilidad financiera" required />
+      <FileUploadField label="Aval den Consejo de Unidad Académica" required />
+      <FileUploadField label="Aval del estudio de costos de la Vicerrectoría de investigación" required/>
+      <FileUploadField label="Autoevaluación del programa" required />
     </div>
   );
 }
