@@ -1,9 +1,9 @@
 
-import UploadSection from "../../../components/UploadSection";
+import Login from "../../../components/Login";
 export default function LoginPage() {
     return (
         <div>
-            <UploadSection/>
+            <Login/>
         </div>
     );
 }
