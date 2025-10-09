@@ -32,7 +32,7 @@ export default function UploadSection() {
 
       {/* Campos de subida de archivos */}
       <FileUploadField label="Acta de aprobación del comité de ética" required />
-      <FileUploadField label="Carta de aceptación del asesor" />
+      <FileUploadField label="Carta de aceptación del asesor"  required />
       <FileUploadField label="Documento de viabilidad financiera" required />
     </div>
   );

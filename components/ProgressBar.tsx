@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import  UploadSection1  from "./UploadSection1";
+import UploadSection2 from "./UploadSection2";
 
 const steps = [
   "Información",
@@ -11,12 +13,25 @@ const steps = [
   "Enviar",
 ];
 
-export default function ProgressBar() {
+export default function ProgressWizard() {
   const [currentStep, setCurrentStep] = useState(1);
 
+  // 🎯 Render dinámico del contenido central
+  const renderStepContent = () => {
+   switch (currentStep) {
+      case 4:
+        return <UploadSection1 />;
+      case 5:
+        return <UploadSection2 />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="w-full flex items-center justify-center py-16 relative">
-      <div className="flex items-center w-full max-w-5xl relative">
+    <div className="w-full flex flex-col items-center justify-center py-16 relative">
+      {/* Barra de progreso */}
+      <div className="flex items-center w-full max-w-5xl relative mb-16">
         {steps.map((step, index) => {
           const stepNumber = index + 1;
           const isActive = currentStep === stepNumber;
@@ -27,7 +42,7 @@ export default function ProgressBar() {
               key={step}
               className="flex-1 flex flex-col items-center relative"
             >
-              {/* Línea conectora con cuerpo */}
+              {/* Línea conectora */}
               {index < steps.length - 1 && (
                 <div className="absolute top-6 left-1/2 w-full h-4 -z-10 rounded-full bg-gradient-to-b from-gray-200 to-gray-300 shadow-inner">
                   <motion.div
@@ -78,7 +93,7 @@ export default function ProgressBar() {
                 )}
               </motion.div>
 
-              {/* Cajita con punta */}
+              {/* Etiqueta */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -103,11 +118,22 @@ export default function ProgressBar() {
         })}
       </div>
 
-      {/* Botones de prueba */}
-      <div className="absolute bottom-6 flex gap-3">
+      {/* 🧩 Contenedor dinámico */}
+      <motion.div
+        key={currentStep}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="w-full max-w-3xl bg-white rounded-2xl shadow-md p-8 min-h-[320px]"
+      >
+        {renderStepContent()}
+      </motion.div>
+
+      {/* Botones de navegación */}
+      <div className="mt-8 flex gap-3">
         <button
           onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 1))}
-          className="px-4 py-2 bg-gray-200 rounded shadow"
+          className="px-4 py-2 bg-gray-200 rounded shadow hover:bg-gray-300"
         >
           Atrás
         </button>
@@ -115,7 +141,7 @@ export default function ProgressBar() {
           onClick={() =>
             setCurrentStep((prev) => Math.min(prev + 1, steps.length))
           }
-          className="px-4 py-2 bg-green-600 text-white rounded shadow"
+          className="px-4 py-2 bg-green-600 text-white rounded shadow hover:bg-green-700"
         >
           Siguiente
         </button>
