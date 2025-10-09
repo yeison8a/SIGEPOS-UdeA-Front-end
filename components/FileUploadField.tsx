@@ -1,9 +1,8 @@
-// components/FileUploadField.tsx
 "use client";
 
 import { useState } from "react";
-import { Info } from "lucide-react"; // 👈 importamos el ícono de información
-import { ArrowDownToLine } from "lucide-react"; // 👈 icono de descarga
+import { Info } from "lucide-react"; 
+import { ArrowDownToLine } from "lucide-react"; 
 
 interface FileUploadFieldProps {
   label: string;

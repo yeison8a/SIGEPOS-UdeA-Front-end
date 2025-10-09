@@ -1,8 +1,7 @@
-// components/UploadSection.tsx
 "use client";
 
 import { useState } from "react";
-import { Plus, Info } from "lucide-react"; // usa lucide-react para íconos
+import { Plus, Info } from "lucide-react"; 
 import FileUploadField from "./FileUploadField";
 
 export default function UploadSection() {
