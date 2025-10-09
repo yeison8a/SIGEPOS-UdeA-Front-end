@@ -3,6 +3,10 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import  UploadSection1  from "./UploadSection1";
 import UploadSection2 from "./UploadSection2";
+import Information from "./Information";
+import Description from "./Description";
+import Instructor from "./Instructor";
+import Send from "./Send";
 
 const steps = [
   "Información",
@@ -19,10 +23,18 @@ export default function ProgressWizard() {
   // 🎯 Render dinámico del contenido central
   const renderStepContent = () => {
    switch (currentStep) {
+      case 1:
+        return <Information/>;
+      case 2:
+        return <Description/>;
+      case 3:
+        return <Instructor/>;
       case 4:
         return <UploadSection1 />;
       case 5:
         return <UploadSection2 />;
+      case 6:
+        return <Send />;
       default:
         return null;
     }
@@ -124,7 +136,7 @@ export default function ProgressWizard() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="w-full max-w-3xl bg-white rounded-2xl shadow-md p-8 min-h-[320px]"
+        className="w-full h-screen bg-white p-8 overflow-auto"
       >
         {renderStepContent()}
       </motion.div>
