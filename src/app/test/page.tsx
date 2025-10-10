@@ -1,5 +1,5 @@
 
-import Send from "../../../components/Enviar";
+import Send from "../../../components/Send";
 export default function LoginPage() {
     return (
         <div>

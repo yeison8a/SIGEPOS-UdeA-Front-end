@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { Check, ArrowLeft, ArrowRight, Save, Send } from "lucide-react";
-import InformacionGeneral from "./InformacionGeneral";
-import DescripcionAspirante from "./DescripcionAspirante";
-import Cohorte from "./Cohorte";
-import Enviar from "./Enviar";
-import UploadSection1 from "./UploadSection1";
-import UploadSection2 from "./UploadSection2";
+import InformacionGeneral from "./Information";
+import Description from "./description";
+import Cohorte from "./cohort";
+import Enviar from "./Send";
+import AnnexesOne from "./AnnexesOne";
+import AnnexesTwo from "./AnnexesTwo";
 
 
 // ===== Ejemplo de tus pasos =====
@@ -30,13 +30,13 @@ export default function StepProgressLayout() {
       case 1:
         return <InformacionGeneral />;
       case 2:
-        return <DescripcionAspirante />;
+        return <Description />;
       case 3:
         return <Cohorte />;
       case 4:
-        return <UploadSection1 />;
+        return <AnnexesOne />;
       case 5:
-        return <UploadSection2 />;
+        return <AnnexesTwo />;
       case 6:
         return <Enviar />;
       default:

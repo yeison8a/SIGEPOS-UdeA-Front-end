@@ -1,4 +1,3 @@
-import Information from "../../../components/Information";
 import ProgressBar from "../../../components/ProgressBar";
 export default function DashboardPage() {
   return (

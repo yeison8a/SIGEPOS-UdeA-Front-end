@@ -3,7 +3,7 @@
 import React from "react";
 import { Plus, Info, ChevronDown, Save, ArrowRight, ArrowLeft, GripVertical } from "lucide-react";
 
-export default function Cohorte() {
+export default function Cohort() {
   return (
     <div className="w-full max-w-5xl mx-auto bg-white p-8">
       {/* Título */}

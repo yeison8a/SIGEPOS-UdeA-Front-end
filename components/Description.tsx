@@ -14,7 +14,7 @@ type FormData = {
   plazasDisponibles: string;
 };
 
-export default function DescripcionAspirante() {
+export default function Description() {
   const [formData, setFormData] = useState<FormData>({
     perfilAspirante: "",
     correoDocumentos: "",
