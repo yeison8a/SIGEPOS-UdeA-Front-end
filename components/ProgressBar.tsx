@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Check, ArrowLeft, ArrowRight, Save, Send } from "lucide-react";
 import InformacionGeneral from "./Information";
 import Description from "./Description";
-import Cohorte from "./cohort";
+import Cohorte from "./Cohort";
 import Enviar from "./Send";
 import AnnexesOne from "./AnnexesOne";
 import AnnexesTwo from "./AnnexesTwo";
