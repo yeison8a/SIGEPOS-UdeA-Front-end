@@ -50,8 +50,7 @@ export default function ProgressBar({ currentStep, setCurrentStep, compact = fal
             return (
               <div
                 key={number}
-                className="relative flex flex-col items-center justify-center cursor-pointer"
-                onClick={() => setCurrentStep(number)} // Hacer clic para moverse entre pasos
+                className="relative flex flex-col items-center justify-center cursor-default select-none"
               >
                 <div className="relative flex flex-col items-center translate-y-[33px]">
                   <motion.div
