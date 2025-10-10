@@ -1,12 +1,13 @@
 "use client";
 import { useState } from "react";
+import { ArrowLeft, ArrowRight, Save, Send } from "lucide-react";
 import ProgressBar from "../../../components/ProgressBar";
 import Information from "../../../components/Information";
 import Description from "../../../components/Description";
-import Cohort from "../../../components/Cohort";
+import Cohort from "../../../components/cohort";
 import UploadSection1 from "../../../components/AnnexesOne";
 import UploadSection2 from "../../../components/AnnexesTwo";
-import Send from "../../../components/Send";
+import SendStep from "../../../components/Send";
 
 export default function DashboardPage() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -24,7 +25,7 @@ export default function DashboardPage() {
       case 5:
         return <UploadSection2 />;
       case 6:
-        return <Send />;
+        return <SendStep />;
       default:
         return null;
     }
@@ -42,6 +43,7 @@ export default function DashboardPage() {
         </aside>
 
         <main className="flex-1 p-4 min-h-[calc(100vh-4rem)] relative">
+          {/* Barra de progreso */}
           <div className="fixed top-16 left-[20%] right-0 z-40 bg-white/80 p-4 backdrop-blur-sm">
             <ProgressBar
               compact
@@ -50,26 +52,59 @@ export default function DashboardPage() {
             />
           </div>
 
+          {/* Contenido dinámico */}
           <div className="mt-28 overflow-auto">
             <div className="max-w-3xl mx-auto bg-white rounded-xl shadow p-6">
               {renderStepContent()}
             </div>
 
-            <div className="sticky bottom-0 left-0 w-full bg-white/80 py-4 flex justify-end gap-3 mt-6 backdrop-blur-sm">
-              <button
-                onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 1))}
-                className="px-4 py-2 bg-gray-200 rounded shadow hover:bg-gray-300"
-                aria-label="Atrás"
-              >
-                Atrás
-              </button>
-              <button
-                onClick={() => setCurrentStep((prev) => Math.min(prev + 1, 6))}
-                className="px-4 py-2 bg-green-600 text-white rounded shadow hover:bg-green-700"
-                aria-label="Siguiente"
-              >
-                Siguiente
-              </button>
+            {/* === Botones (ya no fijos) === */}
+            <div className="w-full bg-white py-4 flex justify-between items-center mt-6 px-6">
+              {/* Botón ANTERIOR */}
+              {currentStep > 1 ? (
+                <button
+                  onClick={() => setCurrentStep((p) => Math.max(p - 1, 1))}
+                  className="flex items-center gap-2 bg-green-800 hover:bg-green-900 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition"
+                >
+                  <ArrowLeft size={16} />
+                  ANTERIOR
+                </button>
+              ) : (
+                <div />
+              )}
+
+              {/* Botones DERECHA */}
+              <div className="flex gap-4">
+                {currentStep < 6 && (
+                  <button
+                    onClick={() => alert("Guardado exitosamente")}
+                    className="flex items-center gap-2 bg-green-800 hover:bg-green-900 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition"
+                  >
+                    <Save size={16} />
+                    GUARDAR
+                  </button>
+                )}
+
+                {currentStep < 6 ? (
+                  <button
+                    onClick={() =>
+                      setCurrentStep((p) => Math.min(p + 1, 6))
+                    }
+                    className="flex items-center gap-2 bg-green-800 hover:bg-green-900 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition"
+                  >
+                    SIGUIENTE
+                    <ArrowRight size={16} />
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => alert("Formulario enviado")}
+                    className="flex items-center gap-2 bg-green-800 hover:bg-green-900 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition"
+                  >
+                    ENVIAR
+                    <Send size={16} />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </main>
