@@ -10,6 +10,7 @@ import UploadSection1 from "../../../components/AnnexesOne";
 import UploadSection2 from "../../../components/AnnexesTwo";
 import SendStep from "../../../components/Send";
 import Sidebar from "../../../components/Sidebar";
+import Header from "../../../components/Header";
 
 
 
@@ -37,16 +38,12 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* === SIDEBAR === */}
+    <div className="min-h-screen">
       <Sidebar />
-
       {/* === CONTENIDO PRINCIPAL === */}
       <div className="flex-1 ml-64">
-        {/* Header fijo */}
-        <header className="w-full bg-red-500 h-16 flex items-center p-4 fixed top-0 left-64 z-50">
-          <div className="text-white font-semibold">HEADER</div>
-        </header>
+        
+        <Header />
 
         {/* Contenido principal */}
         <main className="pt-20 p-4 min-h-screen bg-gray-50 relative">
