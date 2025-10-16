@@ -22,17 +22,17 @@ export default function ProgressBar({ currentStep, setCurrentStep, compact = fal
   const pct = ((currentStep - 1) / (steps.length - 1)) * 100;
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md py-3">
+    <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md py-4">
       <div className="relative w-full max-w-6xl mx-auto flex flex-col items-center">
         {/* Línea de fondo */}
-        <div className="absolute left-[3.5rem] right-[2.9rem] top-1/2 -translate-y-1/2 z-0">
+        <div className="absolute left-[3.2rem] right-[2.7rem] top-1/2 -translate-y-1/2 z-0">
           <div className="relative w-full">
             <div
-              className="absolute top-1/2 left-0 w-full h-[10px] rounded-full -translate-y-1/2 
-              bg-gradient-to-b from-gray-300 to-gray-200 shadow-[inset_0_4px_6px_rgba(0,0,0,0.15)]"
+              className="absolute top-1/2 left-0 w-full h-[14px] rounded-full -translate-y-1/2 
+              bg-gradient-to-b from-gray-300 to-gray-200 shadow-[inset_0_5px_8px_rgba(0,0,0,0.15)]"
             />
             <motion.div
-              className="absolute top-1/2 left-0 h-[10px] bg-green-700 rounded-full -translate-y-1/2 z-0"
+              className="absolute top-1/2 left-0 h-[14px] bg-green-700 rounded-full -translate-y-1/2 z-0"
               animate={{ width: `${pct}%` }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
             />
@@ -46,11 +46,8 @@ export default function ProgressBar({ currentStep, setCurrentStep, compact = fal
             const isActive = number === currentStep;
 
             return (
-              <div
-                key={number}
-                className="relative flex flex-col items-center justify-center cursor-default select-none"
-              >
-                <div className="relative flex flex-col items-center translate-y-[24px]">
+              <div key={number} className="relative flex flex-col items-center justify-center cursor-default select-none">
+                <div className="relative flex flex-col items-center translate-y-[28px]">
                   <motion.div
                     className="w-12 h-12 rounded-full flex items-center justify-center border border-gray-300 bg-gray-200 shadow-[inset_0_8px_8px_rgba(0,0,0,0.25)]"
                     animate={{ scale: isActive ? 1.08 : 1 }}
@@ -59,10 +56,10 @@ export default function ProgressBar({ currentStep, setCurrentStep, compact = fal
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
                         isCompleted
-                          ? 'bg-green-700 text-white'
+                          ? "bg-green-700 text-white"
                           : isActive
-                          ? 'bg-white border-[3px] border-green-700'
-                          : 'bg-gray-400 text-white border-2 border-gray-300'
+                          ? "bg-white border-[3px] border-green-700"
+                          : "bg-gray-400 text-white border-2 border-gray-300"
                       }`}
                     >
                       {isCompleted ? (
@@ -73,7 +70,7 @@ export default function ProgressBar({ currentStep, setCurrentStep, compact = fal
                     </div>
                   </motion.div>
                   <div
-                    className={`absolute top-full mt-1 w-0 h-0 border-l-[9px] border-r-[9px] border-b-[10px]
+                    className={`absolute top-full mt-1 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[10px]
                     ${
                       isActive
                         ? "border-l-transparent border-r-transparent border-b-green-700"
@@ -82,7 +79,7 @@ export default function ProgressBar({ currentStep, setCurrentStep, compact = fal
                   />
                 </div>
                 <div
-                  className={`mt-10 px-3 py-[2px] rounded-full text-xs font-medium shadow-sm transition-all duration-300 ${
+                  className={`mt-12 px-3 py-1 rounded-full text-xs font-medium shadow-sm transition-all duration-300 ${
                     isActive ? "bg-green-700 text-white" : "bg-gray-200 text-gray-500"
                   }`}
                 >
@@ -96,4 +93,3 @@ export default function ProgressBar({ currentStep, setCurrentStep, compact = fal
     </div>
   );
 }
-
