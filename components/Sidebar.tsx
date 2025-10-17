@@ -13,7 +13,7 @@ export default function Sidebar() {
     hidden
 
     fixed top-0 start-0 bottom-0 z-60
-    bg-white border-e border-gray-200" role="dialog" tabindex="-1" aria-label="Sidebar" >
+    bg-white border-e border-gray-200" role="dialog" tabIndex={-1} aria-label="Sidebar" >
       <div className="relative flex flex-col h-full max-h-full ">
           {/* Header */}
           <header className=" p-4 flex justify-between items-center gap-x-2">
@@ -180,21 +180,7 @@ export default function Sidebar() {
           {/* End Body */}
       </div>
     </div>
-    {/* End Sidebar */}
-
-    {/* Content */}
-    <div className="sm:hs-overlay-layout-open:ms-64 min-h-160 bg-white transition-all duration-300">
-      {/* Navigation Toggle */}
-      <div className="lg:hidden p-2">
-        <button type="button" className="flex justify-center items-center gap-x-3 size-8 text-sm text-gray-600 hover:bg-gray-100 rounded-full disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden focus:bg-gray-100" aria-haspopup="dialog" aria-expanded="false" aria-controls="hs-sidebar-content-push" aria-label="Toggle navigation" data-hs-overlay="#hs-sidebar-content-push">
-          <svg className="sm:hidden shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/><path d="m8 9 3 3-3 3"/></svg>
-          <svg className="hidden sm:block shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/><path d="m10 15-3-3 3-3"/></svg>
-          <span className="sr-only">Navigation Toggle</span>
-        </button>
-      </div>
-      {/* End Navigation Toggle */}
-    </div>
-    {/* End Content */}
+    
   </body>
   );
 }
