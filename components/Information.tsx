@@ -176,7 +176,7 @@ export default function Information() {
     : programas;
 
   return (
-    <div className="w-full max-w-5xl mx-auto bg-white p-8">
+    <div className="w-full max-w-5xl mx-auto bg-white p-0">
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-gray-800">Información general</h2>
         <div className="mt-2 h-[1px] w-full bg-gray-200" />

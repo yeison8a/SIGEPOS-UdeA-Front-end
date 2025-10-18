@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowLeft, ArrowRight, Save, Send } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import ProgressBar from "../../../components/ProgressBar";
 import Information from "../../../components/Information";
 import Description from "../../../components/Description";
@@ -10,102 +9,72 @@ import UploadSection1 from "../../../components/AnnexesOne";
 import UploadSection2 from "../../../components/AnnexesTwo";
 import SendStep from "../../../components/Send";
 import Sidebar from "../../../components/Sidebar";
-import Header from "../../../components/Header";
-
-
-
+import StepsButtons from "../../../components/StepsButtons";
 
 export default function DashboardPage() {
   const [currentStep, setCurrentStep] = useState(1);
+  const [isValid, setIsValid] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [currentStep]);
 
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
-        return <Information />;
+        return <Information onValidate={setIsValid} />;
       case 2:
-        return <Description />;
+        return <Description onValidate={setIsValid} />;
       case 3:
-        return <Cohort />;
+        return <Cohort onValidate={setIsValid} />;
       case 4:
-        return <UploadSection1 />;
+        return <UploadSection1 onValidate={setIsValid} />;
       case 5:
-        return <UploadSection2 />;
+        return <UploadSection2 onValidate={setIsValid} />;
       case 6:
-        return <SendStep />;
+        return <SendStep onValidate={setIsValid} />;
       default:
         return null;
     }
   };
 
   return (
-    <div className="min-h-screen">
-      <Sidebar />
+    <div className="min-h-screen bg-gray-50">
+      {/* === SIDEBAR === */}
+      <div className="fixed top-0 left-0 bottom-0 w-64 z-40">
+        <Sidebar />
+      </div>
+
       {/* === CONTENIDO PRINCIPAL === */}
-      <div className="flex-1 ml-64">
-        
-        <Header />
+      <div className="ml-64 flex-1 relative">
+        <main className="p-4 min-h-screen relative">
+          {/* === PROGRESS BAR === */}
+          <ProgressBar
+            compact
+            currentStep={currentStep}
+            setCurrentStep={setCurrentStep}
+          />
 
-        {/* Contenido principal */}
-        <main className="pt-20 p-4 min-h-screen bg-gray-50 relative">
-          {/* Barra de progreso */}
-          <div className="fixed top-16 left-64 right-0 z-40 bg-white/80 p-4 backdrop-blur-sm">
-            <ProgressBar
-              compact
-              currentStep={currentStep}
-              setCurrentStep={setCurrentStep}
-            />
-          </div>
-
-          {/* Contenido dinámico */}
-          <div className="mt-28 overflow-auto">
-            <div className="max-w-3xl mx-auto bg-white rounded-xl shadow p-6">
+          {/* === CONTENIDO SCROLLABLE === */}
+          <div className="absolute top-28 left-0 right-0 bottom-20 z-10 px-6">
+            <div
+              ref={scrollRef}
+              className="w-full h-full bg-white rounded-xl shadow p-8 overflow-y-auto"
+            >
               {renderStepContent()}
             </div>
+          </div>
 
-            {/* Botones inferiores */}
-            <div className="w-full bg-white py-4 flex justify-between items-center mt-6 px-6">
-              {currentStep > 1 ? (
-                <button
-                  onClick={() => setCurrentStep((p) => Math.max(p - 1, 1))}
-                  className="flex items-center gap-2 bg-green-800 hover:bg-green-900 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition"
-                >
-                  <ArrowLeft size={16} />
-                  ANTERIOR
-                </button>
-              ) : (
-                <div />
-              )}
-
-              <div className="flex gap-4">
-                {currentStep < 6 && (
-                  <button
-                    onClick={() => alert("Guardado exitosamente")}
-                    className="flex items-center gap-2 bg-green-800 hover:bg-green-900 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition"
-                  >
-                    <Save size={16} />
-                    GUARDAR
-                  </button>
-                )}
-
-                {currentStep < 6 ? (
-                  <button
-                    onClick={() => setCurrentStep((p) => Math.min(p + 1, 6))}
-                    className="flex items-center gap-2 bg-green-800 hover:bg-green-900 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition"
-                  >
-                    SIGUIENTE
-                    <ArrowRight size={16} />
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => alert("Formulario enviado")}
-                    className="flex items-center gap-2 bg-green-800 hover:bg-green-900 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition"
-                  >
-                    ENVIAR
-                    <Send size={16} />
-                  </button>
-                )}
-              </div>
-            </div>
+          {/* === BOTONES === */}
+          <div className="fixed bottom-0 left-64 right-0 z-30 bg-white shadow-inner">
+            <StepsButtons
+              currentStep={currentStep}
+              setCurrentStep={setCurrentStep}
+              isValid={isValid}
+            />
           </div>
         </main>
       </div>

@@ -5,7 +5,7 @@ import { Plus, Info, ChevronDown, Save, ArrowRight, ArrowLeft, GripVertical } fr
 
 export default function Cohort() {
   return (
-    <div className="w-full max-w-5xl mx-auto bg-white p-8">
+    <div className="w-full max-w-5xl mx-auto bg-white p-0">
       {/* Título */}
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-gray-800">Estudiante instructor</h2>

@@ -34,7 +34,7 @@ export default function Description() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto bg-white p-8">
+    <div className="w-full max-w-5xl mx-auto bg-white p-0">
       {/* Encabezado */}
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-gray-800">Descripción</h2>
