@@ -8,12 +8,14 @@ interface StepButtonsProps {
   // ✅ ahora acepta número o función (setter real)
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
   isValid?: boolean;
+  onSubmit?: () => void;
 }
 
 export default function StepsButtons({
   currentStep,
   setCurrentStep,
   isValid = true,
+  onSubmit,
 }: StepButtonsProps) {
   return (
     <div className="w-full bg-white py-2 flex justify-between items-center px-6">
@@ -55,7 +57,7 @@ export default function StepsButtons({
           </button>
         ) : (
           <button
-            onClick={() => alert("Formulario enviado")}
+            onClick={onSubmit}
             className="flex items-center gap-2 bg-green-800 hover:bg-green-900 text-white text-sm font-semibold px-6 py-2 rounded-lg transition"
           >
             ENVIAR

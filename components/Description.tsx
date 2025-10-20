@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import { Info } from "lucide-react";
 
 type FormData = {
@@ -14,18 +14,62 @@ type FormData = {
   plazasDisponibles: string;
 };
 
-export default function Description() {
-  const [formData, setFormData] = useState<FormData>({
-    perfilAspirante: "",
-    correoDocumentos: "",
-    diasHabiles: "",
-    puntajeMinimo: "",
-    cupoMinimo: "",
-    cupoMaximo: "",
-    cuposRiesgo: "",
-    plazasDisponibles: "",
+interface DescriptionProps {
+  onValidate: (isValid: boolean) => void;
+}
+
+const LOCAL_STORAGE_KEY = "formDescription";
+
+export default function Description({ onValidate }: DescriptionProps) {
+  // ✅ Cargar desde localStorage
+  const [formData, setFormData] = useState<FormData>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {
+          return {
+            perfilAspirante: "",
+            correoDocumentos: "",
+            diasHabiles: "",
+            puntajeMinimo: "",
+            cupoMinimo: "",
+            cupoMaximo: "",
+            cuposRiesgo: "",
+            plazasDisponibles: "",
+          };
+        }
+      }
+    }
+    return {
+      perfilAspirante: "",
+      correoDocumentos: "",
+      diasHabiles: "",
+      puntajeMinimo: "",
+      cupoMinimo: "",
+      cupoMaximo: "",
+      cuposRiesgo: "",
+      plazasDisponibles: "",
+    };
   });
 
+  // ✅ Función para validar si todos los campos están llenos
+  const validateForm = (data: FormData) =>
+    Object.values(data).every((v) => v.trim() !== "");
+
+  // ✅ Validación inicial al montar
+  useEffect(() => {
+    onValidate(validateForm(formData));
+  }, []); // solo una vez
+
+  // ✅ Guardar cambios en localStorage y validar cada vez
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(formData));
+    onValidate(validateForm(formData));
+  }, [formData, onValidate]);
+
+  // ✅ Manejar cambios en inputs/selects
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
@@ -57,16 +101,17 @@ export default function Description() {
           rows={4}
           className="w-full border border-gray-300 rounded-lg p-3 resize-none focus:ring-2 focus:ring-green-700 focus:border-green-700 outline-none"
         />
+        <p className="text-xs text-red-500 mt-1">Required</p>
       </div>
 
       {/* Campos en dos columnas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-41 gap-y-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
         {[
           {
             label: "Correo para envío de documentos",
             name: "correoDocumentos",
             type: "input",
-            placeholder: "Write a long text here...",
+            placeholder: "ejemplo@correo.com",
           },
           {
             label:
@@ -79,20 +124,20 @@ export default function Description() {
             label: "Puntaje mínimo requerido como punto de corte",
             name: "puntajeMinimo",
             type: "input",
-            placeholder: "Write a long text here...",
+            placeholder: "Ej: 350",
           },
           {
             label:
               "Cupo mínimo para la cohorte según el estudio de costos avalado por la Vicerrectoría Administrativa",
             name: "cupoMinimo",
             type: "input",
-            placeholder: "Write a long text here...",
+            placeholder: "Ej: 10",
           },
           {
             label: "Cupo máximo para la cohorte",
             name: "cupoMaximo",
             type: "input",
-            placeholder: "Write a long text here...",
+            placeholder: "Ej: 30",
           },
           {
             label:
@@ -134,7 +179,7 @@ export default function Description() {
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-green-700 focus:border-green-700 outline-none"
               >
-                <option value="">Select an option..</option>
+                <option value="">Seleccione una opción...</option>
                 {field.options?.map((opt) => (
                   <option key={opt} value={opt}>
                     {opt}
