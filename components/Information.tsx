@@ -26,16 +26,35 @@ type Programa = {
   unidadId?: string;
 };
 
-export default function Information() {
-  const [formData, setFormData] = useState<FormData>({
-    tipoSolicitud: "",
-    fechaSolicitud: "",
-    numeroActa: "",
-    fechaConsejo: "",
-    nivel: "",
-    unidadAcademica: "",
-    programa: "",
-    codigoPrograma: "",
+interface InformationProps {
+  onValidate: (isValid: boolean) => void;
+}
+
+const LOCAL_STORAGE_KEY = "formInformation"; // 👈 Clave para guardar la info
+
+export default function Information({ onValidate }: InformationProps) {
+  // ✅ Inicializamos el estado leyendo directamente desde localStorage
+  const [formData, setFormData] = useState<FormData>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          console.error("Error al parsear localStorage:", e);
+        }
+      }
+    }
+    return {
+      tipoSolicitud: "",
+      fechaSolicitud: "",
+      numeroActa: "",
+      fechaConsejo: "",
+      nivel: "",
+      unidadAcademica: "",
+      programa: "",
+      codigoPrograma: "",
+    };
   });
 
   const [unidades, setUnidades] = useState<Unidad[]>([]);
@@ -46,12 +65,23 @@ export default function Information() {
   const [loadingProgramas, setLoadingProgramas] = useState(false);
   const [errorProgramas, setErrorProgramas] = useState<string | null>(null);
 
+  // ✅ Guardar automáticamente en localStorage cada vez que cambia el form
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(formData));
+  }, [formData]);
+
+  // ✅ Validación automática
+  useEffect(() => {
+    const allFilled = Object.values(formData).every((v) => v.trim() !== "");
+    onValidate(allFilled);
+  }, [formData, onValidate]);
+
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
 
-    // 🟡 Si se escribe código → buscar programa y unidad
+    // Si se escribe código → buscar programa y unidad
     if (name === "codigoPrograma") {
       const valueNormalized = value.trim().toLowerCase();
       const found = programas.find(
@@ -64,24 +94,24 @@ export default function Information() {
         ...prev,
         codigoPrograma: value,
         programa: found ? found.id : "",
-        unidadAcademica: found ? (found.unidadId ?? prev.unidadAcademica) : prev.unidadAcademica,
+        unidadAcademica: found ? found.unidadId ?? prev.unidadAcademica : prev.unidadAcademica,
       }));
       return;
     }
 
-    // 🟢 Si se selecciona programa → autocompletar código y unidad
+    // Si se selecciona programa → autocompletar código y unidad
     if (name === "programa") {
       const selected = programas.find((p) => p.id === value);
       setFormData((prev) => ({
         ...prev,
         programa: value,
         codigoPrograma: selected?.codigo ?? "",
-        unidadAcademica: selected?.unidadId ?? prev.unidadAcademica, // 👈 selecciona automáticamente la unidad
+        unidadAcademica: selected?.unidadId ?? prev.unidadAcademica,
       }));
       return;
     }
 
-    // 🟠 Si se cambia unidad → limpiar programa y código
+    // Si se cambia unidad → limpiar programa y código
     if (name === "unidadAcademica") {
       setFormData((prev) => ({
         ...prev,
@@ -96,7 +126,7 @@ export default function Information() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // 🟢 Fetch unidades
+  // === Fetch unidades ===
   useEffect(() => {
     const ac = new AbortController();
     const fetchUnidades = async () => {
@@ -129,7 +159,7 @@ export default function Information() {
     return () => ac.abort();
   }, []);
 
-  // 🟡 Fetch programas
+  // === Fetch programas ===
   useEffect(() => {
     const ac = new AbortController();
     const fetchProgramas = async () => {
@@ -145,13 +175,15 @@ export default function Information() {
               id: String(item.id ?? item.codigo ?? item._id ?? item.value ?? ""),
               nombre: String(item.nombre ?? item.name ?? item.titulo ?? item.label ?? item),
               codigo: String(item.codigo ?? item.code ?? item.programCode ?? "") || undefined,
-              unidadId: String(
-                item.unidadId ??
-                item.unidad ??
-                item.unitId ??
-                item.unit ??
-                item.unidadAcademica?.id ?? ""  // 👈 soporta relaciones tipo objeto
-              ) || undefined,
+              unidadId:
+                String(
+                  item.unidadId ??
+                    item.unidad ??
+                    item.unitId ??
+                    item.unit ??
+                    item.unidadAcademica?.id ??
+                    ""
+                ) || undefined,
             }))
           : [];
 
@@ -184,103 +216,68 @@ export default function Information() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6 justify-items-center">
         {/* Tipo de solicitud */}
-        <div className="w-full max-w-sm">
-          <label className="flex items-center justify-between text-sm font-medium text-gray-700 mb-1">
-            <span>Tipo de solicitud</span>
-            <Info size={16} className="text-gray-400" />
-          </label>
-          <select
-            name="tipoSolicitud"
-            value={formData.tipoSolicitud}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-green-700 focus:border-green-700 outline-none"
-          >
-            <option value="">Seleccione una opción</option>
-            <option value="nueva">Solicitud de apertura de cohorte</option>
-            <option value="modificación">Solicitud de modificación de resolución de apertura de cohorte</option>
-          </select>
-          <p className="text-xs text-red-500 mt-1">Required</p>
-        </div>
+        <FieldSelect
+          label="Tipo de solicitud"
+          name="tipoSolicitud"
+          value={formData.tipoSolicitud}
+          onChange={handleChange}
+          required
+          options={[
+            { value: "", label: "Seleccione una opción" },
+            { value: "nueva", label: "Solicitud de apertura de cohorte" },
+            { value: "modificación", label: "Solicitud de modificación de resolución de apertura de cohorte" },
+          ]}
+        />
 
         {/* Fecha de la solicitud */}
-        <div className="w-full max-w-sm">
-          <label className="flex items-center justify-between text-sm font-medium text-gray-700 mb-1">
-            <span>Fecha de la solicitud</span>
-            <Info size={16} className="text-gray-400" />
-          </label>
-          <div className="relative">
-            <input
-              type="date"
-              name="fechaSolicitud"
-              value={formData.fechaSolicitud}
-              onChange={handleChange}
-              className="w-full border border-green-300 bg-green-50 rounded-lg p-2.5 pr-10 text-gray-700 focus:ring-2 focus:ring-green-700 focus:border-green-700 outline-none"
-            />
-            <Calendar size={18} className="absolute right-3 top-3 text-green-600 pointer-events-none" />
-          </div>
-        </div>
+        <FieldDate
+          label="Fecha de la solicitud"
+          name="fechaSolicitud"
+          value={formData.fechaSolicitud}
+          onChange={handleChange}
+          required
+        />
 
         {/* Número de acta */}
-        <div className="w-full max-w-sm">
-          <label className="flex items-center justify-between text-sm font-medium text-gray-700 mb-1">
-            <span>Número de acta</span>
-            <Info size={16} className="text-gray-400" />
-          </label>
-          <input
-            type="text"
-            name="numeroActa"
-            value={formData.numeroActa}
-            onChange={handleChange}
-            placeholder="Ej: 123"
-            className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-green-700 focus:border-green-700 outline-none"
-          />
-          <p className="text-xs text-red-500 mt-1">Required</p>
-        </div>
+        <FieldInput
+          label="Número de acta"
+          name="numeroActa"
+          value={formData.numeroActa}
+          onChange={handleChange}
+          placeholder="Ej: 123"
+          required
+        />
 
         {/* Fecha aprobación del consejo */}
-        <div className="w-full max-w-sm">
-          <label className="flex items-center justify-between text-sm font-medium text-gray-700 mb-1">
-            <span>Fecha aprobación del consejo</span>
-            <Info size={16} className="text-gray-400" />
-          </label>
-          <input
-            type="date"
-            name="fechaConsejo"
-            value={formData.fechaConsejo}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-green-700 focus:border-green-700 outline-none"
-          />
-          <p className="text-xs text-red-500 mt-1">Required</p>
-        </div>
+        <FieldDate
+          label="Fecha aprobación del consejo"
+          name="fechaConsejo"
+          value={formData.fechaConsejo}
+          onChange={handleChange}
+          required
+        />
 
         {/* Nivel */}
-        <div className="w-full max-w-sm">
-          <label className="flex items-center justify-between text-sm font-medium text-gray-700 mb-1">
-            <span>Nivel</span>
-            <Info size={16} className="text-gray-400" />
-          </label>
-          <select
-            name="nivel"
-            value={formData.nivel}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-green-700 focus:border-green-700 outline-none"
-          >
-            <option value="">Seleccione una opción</option>
-            <option value="pregrado">Pregrado</option>
-            <option value="posgrado">Posgrado</option>
-          </select>
-          <p className="text-xs text-red-500 mt-1">Required</p>
-        </div>
+        <FieldSelect
+          label="Nivel"
+          name="nivel"
+          value={formData.nivel}
+          onChange={handleChange}
+          required
+          options={[
+            { value: "", label: "Seleccione una opción" },
+            { value: "pregrado", label: "Pregrado" },
+            { value: "posgrado", label: "Posgrado" },
+          ]}
+        />
 
         {/* Unidad académica */}
         <div className="w-full max-w-sm">
-          <label className="flex items-center justify-between text-sm font-medium text-gray-700 mb-1">
-            <span>Unidad académica</span>
-            <Info size={16} className="text-gray-400" />
-          </label>
-
+          <LabelWithInfo text="Unidad académica" />
           {loadingUnidades ? (
-            <div className="w-full border border-gray-300 rounded-lg p-2.5 bg-white text-sm text-gray-600">Cargando...</div>
+            <div className="w-full border border-gray-300 rounded-lg p-2.5 bg-white text-sm text-gray-600">
+              Cargando...
+            </div>
           ) : errorUnidades ? (
             <div className="w-full border border-red-300 rounded-lg p-2.5 bg-red-50 text-sm text-red-700">
               {errorUnidades}
@@ -305,11 +302,7 @@ export default function Information() {
 
         {/* Programa */}
         <div className="w-full max-w-sm">
-          <label className="flex items-center justify-between text-sm font-medium text-gray-700 mb-1">
-            <span>Programa</span>
-            <Info size={16} className="text-gray-400" />
-          </label>
-
+          <LabelWithInfo text="Programa" />
           {!programas.length && loadingProgramas ? (
             <div className="w-full border border-gray-300 rounded-lg p-2.5 bg-white text-sm text-gray-600">
               Cargando programas...
@@ -337,22 +330,83 @@ export default function Information() {
         </div>
 
         {/* Código programa */}
-        <div className="w-full max-w-sm">
-          <label className="flex items-center justify-between text-sm font-medium text-gray-700 mb-1">
-            <span>Código programa</span>
-            <Info size={16} className="text-gray-400" />
-          </label>
-          <input
-            type="text"
-            name="codigoPrograma"
-            value={formData.codigoPrograma}
-            onChange={handleChange}
-            placeholder="Ej: 123"
-            className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-green-700 focus:border-green-700 outline-none"
-          />
-          <p className="text-xs text-red-500 mt-1">Required</p>
-        </div>
+        <FieldInput
+          label="Código programa"
+          name="codigoPrograma"
+          value={formData.codigoPrograma}
+          onChange={handleChange}
+          placeholder="Ej: 123"
+          required
+        />
       </div>
+    </div>
+  );
+}
+
+// === Subcomponentes auxiliares ===
+
+function LabelWithInfo({ text }: { text: string }) {
+  return (
+    <label className="flex items-center justify-between text-sm font-medium text-gray-700 mb-1">
+      <span>{text}</span>
+      <Info size={16} className="text-gray-400" />
+    </label>
+  );
+}
+
+function FieldInput({ label, name, value, onChange, placeholder, required }: any) {
+  return (
+    <div className="w-full max-w-sm">
+      <LabelWithInfo text={label} />
+      <input
+        type="text"
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-green-700 focus:border-green-700 outline-none"
+      />
+      {required && <p className="text-xs text-red-500 mt-1">Required</p>}
+    </div>
+  );
+}
+
+function FieldDate({ label, name, value, onChange, required }: any) {
+  return (
+    <div className="w-full max-w-sm">
+      <LabelWithInfo text={label} />
+      <div className="relative">
+        <input
+          type="date"
+          name={name}
+          value={value}
+          onChange={onChange}
+          className="w-full border border-green-300 bg-green-50 rounded-lg p-2.5 pr-10 text-gray-700 focus:ring-2 focus:ring-green-700 focus:border-green-700 outline-none"
+        />
+        <Calendar size={18} className="absolute right-3 top-3 text-green-600 pointer-events-none" />
+      </div>
+      {required && <p className="text-xs text-red-500 mt-1">Required</p>}
+    </div>
+  );
+}
+
+function FieldSelect({ label, name, value, onChange, options, required }: any) {
+  return (
+    <div className="w-full max-w-sm">
+      <LabelWithInfo text={label} />
+      <select
+        name={name}
+        value={value}
+        onChange={onChange}
+        className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-green-700 focus:border-green-700 outline-none"
+      >
+        {options.map((opt: any) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+      {required && <p className="text-xs text-red-500 mt-1">Required</p>}
     </div>
   );
 }

@@ -1,16 +1,23 @@
 "use client";
 
 import { ArrowLeft, ArrowRight, Save, Send } from "lucide-react";
+import React from "react";
 
 interface StepButtonsProps {
   currentStep: number;
-  setCurrentStep: (n: number) => void;
+  // ✅ ahora acepta número o función (setter real)
+  setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
   isValid?: boolean;
 }
 
-export default function StepsButtons({ currentStep, setCurrentStep, isValid = true }: StepButtonsProps) {
+export default function StepsButtons({
+  currentStep,
+  setCurrentStep,
+  isValid = true,
+}: StepButtonsProps) {
   return (
     <div className="w-full bg-white py-2 flex justify-between items-center px-6">
+      
       {/* Botón Anterior */}
       {currentStep > 1 ? (
         <button
