@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import { Info } from "lucide-react";
 
 type FormData = {
@@ -14,17 +14,57 @@ type FormData = {
   plazasDisponibles: string;
 };
 
-export default function Description() {
-  const [formData, setFormData] = useState<FormData>({
-    perfilAspirante: "",
-    correoDocumentos: "",
-    diasHabiles: "",
-    puntajeMinimo: "",
-    cupoMinimo: "",
-    cupoMaximo: "",
-    cuposRiesgo: "",
-    plazasDisponibles: "",
+interface DescriptionProps {
+  onValidate: (isValid: boolean) => void;
+}
+
+const LOCAL_STORAGE_KEY = "formDescription";
+
+export default function Description({ onValidate }: DescriptionProps) {
+  // ✅ Cargar desde localStorage
+  const [formData, setFormData] = useState<FormData>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {
+          return {
+            perfilAspirante: "",
+            correoDocumentos: "",
+            diasHabiles: "",
+            puntajeMinimo: "",
+            cupoMinimo: "",
+            cupoMaximo: "",
+            cuposRiesgo: "",
+            plazasDisponibles: "",
+          };
+        }
+      }
+    }
+    return {
+      perfilAspirante: "",
+      correoDocumentos: "",
+      diasHabiles: "",
+      puntajeMinimo: "",
+      cupoMinimo: "",
+      cupoMaximo: "",
+      cuposRiesgo: "",
+      plazasDisponibles: "",
+    };
   });
+
+  const validateForm = (data: FormData) =>
+    Object.values(data).every((v) => v.trim() !== "");
+
+  useEffect(() => {
+    onValidate(validateForm(formData));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(formData));
+    onValidate(validateForm(formData));
+  }, [formData, onValidate]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -57,49 +97,50 @@ export default function Description() {
           rows={4}
           className="w-full border border-gray-300 rounded-lg p-3 resize-none focus:ring-2 focus:ring-green-700 focus:border-green-700 outline-none"
         />
+        <p className="text-xs text-red-500 mt-1">Required</p>
       </div>
 
       {/* Campos en dos columnas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-41 gap-y-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
         {[
           {
             label: "Correo para envío de documentos",
             name: "correoDocumentos",
             type: "input",
-            placeholder: "Write a long text here...",
+            placeholder: "ejemplo@correo.com",
           },
           {
             label:
               "Número de días hábiles disponibles para la recepción de documentos una vez finalizado el período de inscripciones",
             name: "diasHabiles",
-            type: "select",
-            options: ["3 días", "5 días", "7 días"],
+            type: "input",
+            placeholder: "Ej: 10",
           },
           {
             label: "Puntaje mínimo requerido como punto de corte",
             name: "puntajeMinimo",
             type: "input",
-            placeholder: "Write a long text here...",
+            placeholder: "Ej: 350",
           },
           {
             label:
               "Cupo mínimo para la cohorte según el estudio de costos avalado por la Vicerrectoría Administrativa",
             name: "cupoMinimo",
             type: "input",
-            placeholder: "Write a long text here...",
+            placeholder: "Ej: 10",
           },
           {
             label: "Cupo máximo para la cohorte",
             name: "cupoMaximo",
             type: "input",
-            placeholder: "Write a long text here...",
+            placeholder: "Ej: 30",
           },
           {
             label:
               "Cupos que serán destinados para estudiantes de reingreso, transferencias o cambio de programa",
             name: "cuposRiesgo",
-            type: "select",
-            options: ["Sí", "No"],
+            type: "input",
+            placeholder: "Ej: 30"
           },
           {
             label:
@@ -134,7 +175,7 @@ export default function Description() {
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-green-700 focus:border-green-700 outline-none"
               >
-                <option value="">Select an option..</option>
+                <option value="">Seleccione una opción...</option>
                 {field.options?.map((opt) => (
                   <option key={opt} value={opt}>
                     {opt}

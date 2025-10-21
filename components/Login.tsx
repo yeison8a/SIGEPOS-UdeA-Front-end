@@ -61,10 +61,13 @@ export default function Login() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
+      const data = await response.json();
+      if(response.ok){
+        localStorage.setItem('userId', data.usuario.id);
+        router.push("/dashboard");
+      } else {
+        setError(data.message || "Credenciales inválidas");
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || "Error al procesar la solicitud");
       }
 
       if (isRegister) {

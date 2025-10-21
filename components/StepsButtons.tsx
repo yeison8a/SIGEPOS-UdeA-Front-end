@@ -1,19 +1,23 @@
 "use client";
 
+import { on } from "events";
 import { ArrowLeft, ArrowRight, Save, Send } from "lucide-react";
 import React from "react";
 
 interface StepButtonsProps {
   currentStep: number;
-  // ✅ ahora acepta número o función (setter real)
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
   isValid?: boolean;
+  onSubmit?: () => void;
+  onSave?: () => Promise<void>;
 }
 
 export default function StepsButtons({
   currentStep,
   setCurrentStep,
   isValid = true,
+  onSubmit,
+  onSave,
 }: StepButtonsProps) {
   return (
     <div className="w-full bg-white py-2 flex justify-between items-center px-6">
@@ -35,7 +39,7 @@ export default function StepsButtons({
       <div className="flex gap-4">
         {currentStep < 6 && (
           <button
-            onClick={() => alert("Guardado exitosamente")}
+            onClick={onSave}
             className="flex items-center gap-2 bg-green-800 hover:bg-green-900 text-white text-sm font-semibold px-6 py-2 rounded-lg transition"
           >
             <Save size={16} />
@@ -55,7 +59,7 @@ export default function StepsButtons({
           </button>
         ) : (
           <button
-            onClick={() => alert("Formulario enviado")}
+            onClick={onSubmit}
             className="flex items-center gap-2 bg-green-800 hover:bg-green-900 text-white text-sm font-semibold px-6 py-2 rounded-lg transition"
           >
             ENVIAR
