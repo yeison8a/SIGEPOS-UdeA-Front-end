@@ -80,8 +80,8 @@ export default function Login() {
       });
       const data = await response.json();
       if(response.ok){
-        router.push("/barra");
-        //guardar token
+        localStorage.setItem('userId', data.usuario.id);
+        router.push("/dashboard");
       } else {
         setError(data.message || "Credenciales inválidas");
       }

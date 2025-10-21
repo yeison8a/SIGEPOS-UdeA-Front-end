@@ -3,7 +3,7 @@
 
 export default function Sidebar() {
   return (
-    <body className="hs-overlay-body-open hs-overlay-body-open:overflow-hidden">
+    <div className="hs-overlay-body-open hs-overlay-body-open:overflow-hidden">
 
     {/* Sidebar */}
     <div id="hs-sidebar-content-push" className="hs-overlay [--body-scroll:true] lg:[--overlay-backdrop:false] [--is-layout-affect:true] [--opened:lg] [--auto-close:lg] hs-overlay-open:translate-x-0 lg:hs-overlay-layout-open:translate-x-0 lg:block lg:-translate-x-full lg:end-auto lg:bottom-0 w-64 [--body-scroll:true]
@@ -181,6 +181,6 @@ export default function Sidebar() {
       </div>
     </div>
     
-  </body>
+  </div>
   );
 }

@@ -34,7 +34,6 @@ interface InformationProps {
 const LOCAL_STORAGE_KEY = "formInformation";
 
 export default function Information({ onValidate }: InformationProps) {
-  // ✅ Cargar desde localStorage al iniciar
   const [formData, setFormData] = useState<FormData>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -66,24 +65,20 @@ export default function Information({ onValidate }: InformationProps) {
   const [loadingProgramas, setLoadingProgramas] = useState(false);
   const [errorProgramas, setErrorProgramas] = useState<string | null>(null);
 
-  // ✅ Guardar automáticamente cada cambio
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(formData));
   }, [formData]);
 
-  // ✅ Validación automática
   useEffect(() => {
     const allFilled = Object.values(formData).every((v) => v.trim() !== "");
     onValidate(allFilled);
   }, [formData, onValidate]);
 
-  // ✅ Manejar cambios de campos
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
 
-    // Si se escribe código → buscar programa y unidad
     if (name === "codigoPrograma") {
       const valueNormalized = value.trim().toLowerCase();
       const found = programas.find(
@@ -102,12 +97,11 @@ export default function Information({ onValidate }: InformationProps) {
       };
 
       setFormData(updated);
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated)); // ✅ guarda con el ID del programa
-      console.log("💾 Guardado en localStorage:", updated);
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated)); 
       return;
     }
 
-    // Si se selecciona programa → autocompletar código y unidad
+
     if (name === "programa") {
       const selected = programas.find((p) => p.id === value);
       const updated = {
@@ -117,18 +111,15 @@ export default function Information({ onValidate }: InformationProps) {
         unidadAcademica: selected?.unidadId ?? selected?.unidadAcademica?.id ?? formData.unidadAcademica,
       };
       setFormData(updated);
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated)); // ✅ guarda con el ID del programa
-      console.log("💾 Guardado en localStorage:", updated);
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
 
       if (selected) {
         localStorage.setItem("programId", selected.id);
-        console.log("💾 Guardado programId:", selected.id);
       }
       
       return;
     }
 
-    // Si se cambia unidad → limpiar programa y código
     if (name === "unidadAcademica") {
       const updated = {
         ...formData,
@@ -141,13 +132,11 @@ export default function Information({ onValidate }: InformationProps) {
       return;
     }
 
-    // Caso general
     const updated = { ...formData, [name]: value };
     setFormData(updated);
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
   };
 
-  // === Fetch unidades ===
   useEffect(() => {
     const ac = new AbortController();
     const fetchUnidades = async () => {
@@ -180,7 +169,6 @@ export default function Information({ onValidate }: InformationProps) {
     return () => ac.abort();
   }, []);
 
-  // === Fetch programas ===
   useEffect(() => {
     const ac = new AbortController();
     const fetchProgramas = async () => {
@@ -216,7 +204,6 @@ export default function Information({ onValidate }: InformationProps) {
     return () => ac.abort();
   }, []);
 
-  // Filtrar programas por unidad seleccionada
   const programasFiltrados = formData.unidadAcademica
     ? programas.filter((p) => !p.unidadId || p.unidadId === formData.unidadAcademica)
     : programas;
@@ -357,7 +344,6 @@ export default function Information({ onValidate }: InformationProps) {
   );
 }
 
-// === Subcomponentes auxiliares ===
 function LabelWithInfo({ text }: { text: string }) {
   return (
     <label className="flex items-center justify-between text-sm font-medium text-gray-700 mb-1">

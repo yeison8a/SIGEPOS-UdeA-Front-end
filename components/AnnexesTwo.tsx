@@ -19,7 +19,6 @@ export default function UploadSection({ onValidate }: UploadSectionProps) {
     "Documento de viabilidad financiera": null,
   });
 
-  // ✅ Cargar desde localStorage al iniciar
   useEffect(() => {
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (saved) {
@@ -40,7 +39,6 @@ export default function UploadSection({ onValidate }: UploadSectionProps) {
     }
   }, []);
 
-  // ✅ Guardar en localStorage cada vez que cambia algo
   useEffect(() => {
     localStorage.setItem(
       LOCAL_STORAGE_KEY,
@@ -48,13 +46,11 @@ export default function UploadSection({ onValidate }: UploadSectionProps) {
     );
   }, [files, description]);
 
-  // ✅ Validar que todos los archivos requeridos estén completos
   useEffect(() => {
     const allFilled = Object.values(files).every((f) => f !== null);
     onValidate(allFilled);
   }, [files, onValidate]);
 
-  // ✅ Maneja selección de archivos
   const handleFileSelect = (label: string, file: File | null) => {
     setFiles((prev) => ({ ...prev, [label]: file }));
   };

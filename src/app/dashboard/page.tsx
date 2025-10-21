@@ -16,6 +16,11 @@ export default function DashboardPage() {
   const [isValid, setIsValid] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const [uploadFiles, setUploadFiles] = useState<{ [key: string]: File | null }>({
+    "Aval del Consejo de Unidad Académica": null,
+    "Aval del estudio de costos de la Vicerrectoría de Investigación": null,
+  });
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTo({ top: 0, behavior: "smooth" });
@@ -31,7 +36,7 @@ export default function DashboardPage() {
       case 3:
         return <Cohort onValidate={setIsValid} />;
       case 4:
-        return <UploadSection1 onValidate={setIsValid} />;
+        return <UploadSection1 onValidate={setIsValid} setParentFiles={setUploadFiles} />;
       case 5:
         return <UploadSection2 onValidate={setIsValid} />;
       case 6:
@@ -41,100 +46,111 @@ export default function DashboardPage() {
     }
   };
 
+  // ✅ CORREGIDO: handleSubmit sin useState dentro
   const handleSubmit = async () => {
-  try {
-    // 1️⃣ Leer datos del localStorage
-    const information = JSON.parse(localStorage.getItem("formInformation") || "{}");
-    const description = JSON.parse(localStorage.getItem("formDescription") || "{}");
-    const cohort = JSON.parse(localStorage.getItem("cohortData") || "{}");
-    const annexesOne = JSON.parse(localStorage.getItem("uploadSectionData") || "{}");
-    const annexesTwo = JSON.parse(localStorage.getItem("uploadSectionData2") || "{}");
+    try {
+      const information = JSON.parse(localStorage.getItem("formInformation") || "{}");
+      const description = JSON.parse(localStorage.getItem("formDescription") || "{}");
+      const cohort = JSON.parse(localStorage.getItem("cohortData") || "{}");
 
-    const userId = localStorage.getItem("userId"); // ⚙️ si guardas el usuario logueado
-    const programId = localStorage.getItem("programId"); // ⚙️ si guardas el programa logueado
-   
-    const payloadSolicitudCohorte = {
-      numeroActa: information.numeroActa,
-      fechaActaAprobacion: information.fechaConsejo,
-      programa: {id: programId},
-      perfilAspirante: description.perfilAspirante,
-      correoDocumentacion: description.correoDocumentos,
-      diasHabilesRecepcion: description.diasHabiles,
-      puntajeMinimoCorte: description.puntajeMinimo,
-      cupoMinCohorte: description.cupoMinimo,
-      cupoMaxCohorte: description.cupoMaximo,
-      cupoEstudiantes: description.cuposRiesgo,
-      plazasDisponibles: "",
+      const userId = localStorage.getItem("userId");
+      const programId = localStorage.getItem("programId");
+
+      if (!userId) {
+        alert("No hay userId en localStorage");
+        return;
+      }
+
+      const payloadSolicitudCohorte = {
+        numeroActa: information.numeroActa,
+        fechaActaAprobacion: information.fechaConsejo,
+        programa: { id: programId },
+        perfilAspirante: description.perfilAspirante,
+        correoDocumentacion: description.correoDocumentos,
+        diasHabilesRecepcion: description.diasHabiles,
+        puntajeMinimoCorte: description.puntajeMinimo,
+        cupoMinCohorte: description.cupoMinimo,
+        cupoMaxCohorte: description.cupoMaximo,
+        cupoEstudiantes: description.cuposRiesgo,
+        plazasDisponibles: description.plazasDisponibles === "Sí",
+      };
+
+      const res = await fetch(`http://localhost:8080/api/cohort-applications?userId=${userId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify(payloadSolicitudCohorte),
+      });
+
+      const text = await res.text();
+      console.log("Respuesta backend:", res.status, text);
+
+      if (!res.ok) throw new Error(`Error al guardar la información general: ${res.status}`);
+
+      localStorage.removeItem("formInformation");
+      localStorage.removeItem("formDescription");
+      localStorage.removeItem("cohortData");
+
+      setCurrentStep(1);
+      alert("Solicitud de cohorte enviada correctamente");
+    } catch (err) {
+      console.error("Error al enviar la solicitud:", err);
+      alert("Error al enviar la solicitud.");
     }
-    
-    if(description.plazasDisponibles === "Sí"){
-      payloadSolicitudCohorte.plazasDisponibles = "true";
-    } else{
-      payloadSolicitudCohorte.plazasDisponibles = "false";
+  };
+
+  const handleSaveDocuments = async () => {
+    try {
+      const formData = new FormData();
+      Object.values(uploadFiles).forEach((file) => {
+        if (file) formData.append("archivos", file);
+      });
+
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        alert("No hay userId en localStorage");
+        return;
+      }
+
+      const res = await fetch(`http://localhost:8080/api/user/${userId}/documents`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const text = await res.text();
+      console.log("Respuesta documentos:", res.status, text);
+
+      if (!res.ok) throw new Error(`Error al guardar los documentos: ${text}`);
+
+      alert("Documentos guardados exitosamente");
+    } catch (err) {
+      console.error("Error al guardar los documentos:", err);
+      alert("Error al guardar los documentos");
     }
-
-
-    const res = await fetch("http://localhost:8080/api/cohort-applications", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payloadSolicitudCohorte),
-    });
-
-    if (!res.ok) throw new Error("Error al guardar la información general");
-
-
-
-
-
-
-
-
-
-
-
-
-    localStorage.clear();
-    setCurrentStep(1); // vuelve al inicio
-  } catch (err) {
-    console.error("Error al enviar:", err);
-    alert("Error al enviar la solicitud. Revisa la consola.");
-  }
-};
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* === SIDEBAR === */}
       <div className="fixed top-0 left-0 bottom-0 w-64 z-40">
         <Sidebar />
       </div>
-
-      {/* === CONTENIDO PRINCIPAL === */}
       <div className="ml-64 flex-1 relative">
         <main className="p-4 min-h-screen relative">
-          {/* === PROGRESS BAR === */}
-          <ProgressBar
-            compact
-            currentStep={currentStep}
-            setCurrentStep={setCurrentStep}
-          />
-
-          {/* === CONTENIDO SCROLLABLE === */}
+          <ProgressBar compact currentStep={currentStep} setCurrentStep={setCurrentStep} />
           <div className="absolute top-28 left-0 right-0 bottom-20 z-10 px-6">
-            <div
-              ref={scrollRef}
-              className="w-full h-full bg-white rounded-xl shadow p-8 overflow-y-auto"
-            >
+            <div ref={scrollRef} className="w-full h-full bg-white rounded-xl shadow p-8 overflow-y-auto">
               {renderStepContent()}
             </div>
           </div>
-
-          {/* === BOTONES === */}
           <div className="fixed bottom-0 left-64 right-0 z-30 bg-white shadow-inner">
             <StepsButtons
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
               isValid={isValid}
               onSubmit={handleSubmit}
+              onSave={handleSaveDocuments}
             />
           </div>
         </main>

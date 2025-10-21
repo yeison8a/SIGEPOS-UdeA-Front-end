@@ -54,22 +54,18 @@ export default function Description({ onValidate }: DescriptionProps) {
     };
   });
 
-  // ✅ Función para validar si todos los campos están llenos
   const validateForm = (data: FormData) =>
     Object.values(data).every((v) => v.trim() !== "");
 
-  // ✅ Validación inicial al montar
   useEffect(() => {
     onValidate(validateForm(formData));
-  }, []); // solo una vez
+  }, []);
 
-  // ✅ Guardar cambios en localStorage y validar cada vez
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(formData));
     onValidate(validateForm(formData));
   }, [formData, onValidate]);
 
-  // ✅ Manejar cambios en inputs/selects
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {

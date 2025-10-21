@@ -6,11 +6,14 @@ import FileUploadField from "./FileUploadField";
 
 interface UploadSectionProps {
   onValidate: (isValid: boolean) => void;
+  setParentFiles: React.Dispatch<
+    React.SetStateAction<{ [key: string]: File | null }>
+  >;
 }
 
 const LOCAL_STORAGE_KEY = "uploadSectionData";
 
-export default function UploadSection({ onValidate }: UploadSectionProps) {
+export default function UploadSection({ onValidate, setParentFiles }: UploadSectionProps) {
   const [showDescription, setShowDescription] = useState(false);
   const [description, setDescription] = useState("");
   const [files, setFiles] = useState<{ [key: string]: File | null }>({
@@ -18,7 +21,6 @@ export default function UploadSection({ onValidate }: UploadSectionProps) {
     "Aval del estudio de costos de la Vicerrectoría de Investigación": null,
   });
 
-  // ✅ Cargar desde localStorage al iniciar
   useEffect(() => {
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (saved) {
@@ -39,24 +41,18 @@ export default function UploadSection({ onValidate }: UploadSectionProps) {
     }
   }, []);
 
-  // ✅ Guardar en localStorage cada vez que cambia algo
-  useEffect(() => {
-    localStorage.setItem(
-      LOCAL_STORAGE_KEY,
-      JSON.stringify({ files, description })
-    );
-  }, [files, description]);
-
-  // ✅ Validar que todos los archivos requeridos estén completos
   useEffect(() => {
     const allFilled = Object.values(files).every((f) => f !== null);
     onValidate(allFilled);
   }, [files, onValidate]);
 
-  // ✅ Maneja selección de archivos
   const handleFileSelect = (label: string, file: File | null) => {
-    setFiles((prev) => ({ ...prev, [label]: file }));
-  };
+  setFiles((prev) => {
+    const updated = { ...prev, [label]: file };
+    setParentFiles(updated);
+    return updated;
+  });
+};
 
   return (
     <div className="max-w-2xl mx-auto mt-10 space-y-6">
