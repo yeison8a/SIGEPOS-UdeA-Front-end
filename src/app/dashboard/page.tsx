@@ -41,6 +41,66 @@ export default function DashboardPage() {
     }
   };
 
+  const handleSubmit = async () => {
+  try {
+    // 1️⃣ Leer datos del localStorage
+    const information = JSON.parse(localStorage.getItem("formInformation") || "{}");
+    const description = JSON.parse(localStorage.getItem("formDescription") || "{}");
+    const cohort = JSON.parse(localStorage.getItem("cohortData") || "{}");
+    const annexesOne = JSON.parse(localStorage.getItem("uploadSectionData") || "{}");
+    const annexesTwo = JSON.parse(localStorage.getItem("uploadSectionData2") || "{}");
+
+    const userId = localStorage.getItem("userId"); // ⚙️ si guardas el usuario logueado
+    const programId = localStorage.getItem("programId"); // ⚙️ si guardas el programa logueado
+   
+    const payloadSolicitudCohorte = {
+      numeroActa: information.numeroActa,
+      fechaActaAprobacion: information.fechaConsejo,
+      programa: {id: programId},
+      perfilAspirante: description.perfilAspirante,
+      correoDocumentacion: description.correoDocumentos,
+      diasHabilesRecepcion: description.diasHabiles,
+      puntajeMinimoCorte: description.puntajeMinimo,
+      cupoMinCohorte: description.cupoMinimo,
+      cupoMaxCohorte: description.cupoMaximo,
+      cupoEstudiantes: description.cuposRiesgo,
+      plazasDisponibles: "",
+    }
+    
+    if(description.plazasDisponibles === "Sí"){
+      payloadSolicitudCohorte.plazasDisponibles = "true";
+    } else{
+      payloadSolicitudCohorte.plazasDisponibles = "false";
+    }
+
+
+    const res = await fetch("http://localhost:8080/api/cohort-applications", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payloadSolicitudCohorte),
+    });
+
+    if (!res.ok) throw new Error("Error al guardar la información general");
+
+
+
+
+
+
+
+
+
+
+
+
+    localStorage.clear();
+    setCurrentStep(1); // vuelve al inicio
+  } catch (err) {
+    console.error("Error al enviar:", err);
+    alert("Error al enviar la solicitud. Revisa la consola.");
+  }
+};
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* === SIDEBAR === */}
@@ -74,6 +134,7 @@ export default function DashboardPage() {
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
               isValid={isValid}
+              onSubmit={handleSubmit}
             />
           </div>
         </main>

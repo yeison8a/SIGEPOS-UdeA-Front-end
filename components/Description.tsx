@@ -117,8 +117,8 @@ export default function Description({ onValidate }: DescriptionProps) {
             label:
               "Número de días hábiles disponibles para la recepción de documentos una vez finalizado el período de inscripciones",
             name: "diasHabiles",
-            type: "select",
-            options: ["3 días", "5 días", "7 días"],
+            type: "input",
+            placeholder: "Ej: 10",
           },
           {
             label: "Puntaje mínimo requerido como punto de corte",
@@ -143,8 +143,8 @@ export default function Description({ onValidate }: DescriptionProps) {
             label:
               "Cupos que serán destinados para estudiantes de reingreso, transferencias o cambio de programa",
             name: "cuposRiesgo",
-            type: "select",
-            options: ["Sí", "No"],
+            type: "input",
+            placeholder: "Ej: 30"
           },
           {
             label:

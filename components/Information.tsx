@@ -24,16 +24,17 @@ type Programa = {
   nombre: string;
   codigo?: string;
   unidadId?: string;
+  unidadAcademica?: { id: string; nombre: string };
 };
 
 interface InformationProps {
   onValidate: (isValid: boolean) => void;
 }
 
-const LOCAL_STORAGE_KEY = "formInformation"; // 👈 Clave para guardar la info
+const LOCAL_STORAGE_KEY = "formInformation";
 
 export default function Information({ onValidate }: InformationProps) {
-  // ✅ Inicializamos el estado leyendo directamente desde localStorage
+  // ✅ Cargar desde localStorage al iniciar
   const [formData, setFormData] = useState<FormData>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -65,7 +66,7 @@ export default function Information({ onValidate }: InformationProps) {
   const [loadingProgramas, setLoadingProgramas] = useState(false);
   const [errorProgramas, setErrorProgramas] = useState<string | null>(null);
 
-  // ✅ Guardar automáticamente en localStorage cada vez que cambia el form
+  // ✅ Guardar automáticamente cada cambio
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(formData));
   }, [formData]);
@@ -76,6 +77,7 @@ export default function Information({ onValidate }: InformationProps) {
     onValidate(allFilled);
   }, [formData, onValidate]);
 
+  // ✅ Manejar cambios de campos
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
@@ -86,44 +88,63 @@ export default function Information({ onValidate }: InformationProps) {
       const valueNormalized = value.trim().toLowerCase();
       const found = programas.find(
         (p) =>
-          (p.codigo && p.codigo.toLowerCase() === valueNormalized) ||
+          (p.codigo && String(p.codigo).toLowerCase() === valueNormalized) ||
           p.id.toLowerCase() === valueNormalized
       );
 
-      setFormData((prev) => ({
-        ...prev,
+      const updated = {
+        ...formData,
         codigoPrograma: value,
         programa: found ? found.id : "",
-        unidadAcademica: found ? found.unidadId ?? prev.unidadAcademica : prev.unidadAcademica,
-      }));
+        unidadAcademica: found
+          ? found.unidadId ?? found.unidadAcademica?.id ?? formData.unidadAcademica
+          : formData.unidadAcademica,
+      };
+
+      setFormData(updated);
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated)); // ✅ guarda con el ID del programa
+      console.log("💾 Guardado en localStorage:", updated);
       return;
     }
 
     // Si se selecciona programa → autocompletar código y unidad
     if (name === "programa") {
       const selected = programas.find((p) => p.id === value);
-      setFormData((prev) => ({
-        ...prev,
+      const updated = {
+        ...formData,
         programa: value,
         codigoPrograma: selected?.codigo ?? "",
-        unidadAcademica: selected?.unidadId ?? prev.unidadAcademica,
-      }));
+        unidadAcademica: selected?.unidadId ?? selected?.unidadAcademica?.id ?? formData.unidadAcademica,
+      };
+      setFormData(updated);
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated)); // ✅ guarda con el ID del programa
+      console.log("💾 Guardado en localStorage:", updated);
+
+      if (selected) {
+        localStorage.setItem("programId", selected.id);
+        console.log("💾 Guardado programId:", selected.id);
+      }
+      
       return;
     }
 
     // Si se cambia unidad → limpiar programa y código
     if (name === "unidadAcademica") {
-      setFormData((prev) => ({
-        ...prev,
+      const updated = {
+        ...formData,
         unidadAcademica: value,
         programa: "",
         codigoPrograma: "",
-      }));
+      };
+      setFormData(updated);
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
       return;
     }
 
     // Caso general
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const updated = { ...formData, [name]: value };
+    setFormData(updated);
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
   };
 
   // === Fetch unidades ===
@@ -172,18 +193,11 @@ export default function Information({ onValidate }: InformationProps) {
 
         const list: Programa[] = Array.isArray(data)
           ? data.map((item: any) => ({
-              id: String(item.id ?? item.codigo ?? item._id ?? item.value ?? ""),
-              nombre: String(item.nombre ?? item.name ?? item.titulo ?? item.label ?? item),
-              codigo: String(item.codigo ?? item.code ?? item.programCode ?? "") || undefined,
-              unidadId:
-                String(
-                  item.unidadId ??
-                    item.unidad ??
-                    item.unitId ??
-                    item.unit ??
-                    item.unidadAcademica?.id ??
-                    ""
-                ) || undefined,
+              id: String(item.id ?? ""),
+              nombre: String(item.nombre ?? ""),
+              codigo: String(item.codigo ?? "") || undefined,
+              unidadId: String(item.unidadAcademica?.id ?? ""),
+              unidadAcademica: item.unidadAcademica,
             }))
           : [];
 
@@ -335,7 +349,7 @@ export default function Information({ onValidate }: InformationProps) {
           name="codigoPrograma"
           value={formData.codigoPrograma}
           onChange={handleChange}
-          placeholder="Ej: 123"
+          placeholder="Ej: 50270"
           required
         />
       </div>
@@ -344,7 +358,6 @@ export default function Information({ onValidate }: InformationProps) {
 }
 
 // === Subcomponentes auxiliares ===
-
 function LabelWithInfo({ text }: { text: string }) {
   return (
     <label className="flex items-center justify-between text-sm font-medium text-gray-700 mb-1">
