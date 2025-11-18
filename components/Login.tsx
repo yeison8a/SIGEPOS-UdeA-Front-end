@@ -71,7 +71,7 @@ export default function Login() {
       }
 
       if (isRegister) {
-        alert("✅ Registro exitoso. Ahora puedes iniciar sesión.");
+        alert("Registro exitoso. Ahora puedes iniciar sesión.");
         setIsRegister(false);
       } else {
         const data = await response.json();
