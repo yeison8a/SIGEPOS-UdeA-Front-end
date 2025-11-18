@@ -75,12 +75,12 @@ export default function Login() {
         setIsRegister(false);
       } else {
         const data = await response.json();
-        // ✅ Guarda el token si tu backend lo envía
+
         if (data.token) {
           localStorage.setItem("token", data.token);
         }
-        alert("✅ Inicio de sesión exitoso");
-        router.push("/dashboard"); // Redirige a tu dashboard
+        alert("Inicio de sesión exitoso");
+        router.push("/dashboard"); 
       }
     } catch (err: any) {
       setError(err.message || "Error de conexión con el servidor");
