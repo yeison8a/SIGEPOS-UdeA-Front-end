@@ -29,11 +29,12 @@ type Programa = {
 
 interface InformationProps {
   onValidate: (isValid: boolean) => void;
+  onTipoSolicitudChange: (value: string) => void;
 }
 
 const LOCAL_STORAGE_KEY = "formInformation";
 
-export default function Information({ onValidate }: InformationProps) {
+export default function Information({ onValidate, onTipoSolicitudChange }: InformationProps) {
   const [formData, setFormData] = useState<FormData>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -45,9 +46,12 @@ export default function Information({ onValidate }: InformationProps) {
         }
       }
     }
+
+    const today = new Date().toISOString().split("T")[0];
+
     return {
       tipoSolicitud: "",
-      fechaSolicitud: "",
+      fechaSolicitud: today,
       numeroActa: "",
       fechaConsejo: "",
       nivel: "",
@@ -78,6 +82,10 @@ export default function Information({ onValidate }: InformationProps) {
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+
+    if (name === "tipoSolicitud") {
+    onTipoSolicitudChange(value); 
+  }
 
     if (name === "codigoPrograma") {
       const valueNormalized = value.trim().toLowerCase();
@@ -217,6 +225,7 @@ export default function Information({ onValidate }: InformationProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6 justify-items-center">
         {/* Tipo de solicitud */}
+        
         <FieldSelect
           label="Tipo de solicitud"
           name="tipoSolicitud"
@@ -227,7 +236,7 @@ export default function Information({ onValidate }: InformationProps) {
             { value: "", label: "Seleccione una opción" },
             { value: "nueva", label: "Solicitud de apertura de cohorte" },
             { value: "modificación", label: "Solicitud de modificación de resolución de apertura de cohorte" },
-          ]}
+          ]}         
         />
 
         {/* Fecha de la solicitud */}
@@ -236,7 +245,7 @@ export default function Information({ onValidate }: InformationProps) {
           name="fechaSolicitud"
           value={formData.fechaSolicitud}
           onChange={handleChange}
-          required
+          disabled
         />
 
         {/* Número de acta */}
@@ -267,8 +276,9 @@ export default function Information({ onValidate }: InformationProps) {
           required
           options={[
             { value: "", label: "Seleccione una opción" },
-            { value: "pregrado", label: "Pregrado" },
-            { value: "posgrado", label: "Posgrado" },
+            { value: "Maestría", label: "Maestría" },
+            { value: "Especialización", label: "Especialización" },
+            { value: "Doctorado", label: "Doctorado" },
           ]}
         />
 
@@ -370,7 +380,7 @@ function FieldInput({ label, name, value, onChange, placeholder, required }: any
   );
 }
 
-function FieldDate({ label, name, value, onChange, required }: any) {
+function FieldDate({ label, name, value, onChange, required, disabled }: any) {
   return (
     <div className="w-full max-w-sm">
       <LabelWithInfo text={label} />
@@ -380,6 +390,7 @@ function FieldDate({ label, name, value, onChange, required }: any) {
           name={name}
           value={value}
           onChange={onChange}
+          disabled={disabled}
           className="w-full border border-green-300 bg-green-50 rounded-lg p-2.5 pr-10 text-gray-700 focus:ring-2 focus:ring-green-700 focus:border-green-700 outline-none"
         />
         <Calendar size={18} className="absolute right-3 top-3 text-green-600 pointer-events-none" />

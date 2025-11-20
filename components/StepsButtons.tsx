@@ -1,8 +1,10 @@
 "use client";
 
 import { on } from "events";
+import { s } from "framer-motion/client";
 import { ArrowLeft, ArrowRight, Save, Send } from "lucide-react";
 import React from "react";
+import { useState } from "react";
 
 interface StepButtonsProps {
   currentStep: number;
@@ -10,7 +12,10 @@ interface StepButtonsProps {
   isValid?: boolean;
   onSubmit?: () => void;
   onSave?: () => Promise<void>;
+  plazasDisponibles?: boolean;
+  tipoSolicitud?: string;
 }
+
 
 export default function StepsButtons({
   currentStep,
@@ -18,14 +23,30 @@ export default function StepsButtons({
   isValid = true,
   onSubmit,
   onSave,
+  plazasDisponibles = true,
+  tipoSolicitud = "",
 }: StepButtonsProps) {
+
   return (
     <div className="w-full bg-white py-2 flex justify-between items-center px-6">
       
       {/* Botón Anterior */}
       {currentStep > 1 ? (
         <button
-          onClick={() => setCurrentStep((p) => Math.max(p - 1, 1))}
+          onClick={() => {
+            if(!plazasDisponibles && currentStep === 4) {
+              setCurrentStep(2);
+            } else if(!plazasDisponibles && currentStep === 5 && tipoSolicitud === "modificación") {
+              setCurrentStep(2);
+            }else if(plazasDisponibles && currentStep === 5 && tipoSolicitud === "modificación"){
+              setCurrentStep(3);
+            }
+            else if(currentStep === 6 && tipoSolicitud === "nueva"){
+              setCurrentStep(4);
+            }else{
+              setCurrentStep((p) => Math.max(p - 1, 1))}
+          }
+          }
           className="flex items-center gap-2 bg-green-800 hover:bg-green-900 text-white text-sm font-semibold px-6 py-2 rounded-lg transition"
         >
           <ArrowLeft size={16} />
@@ -50,7 +71,21 @@ export default function StepsButtons({
         {currentStep < 6 ? (
           <button
             disabled={!isValid}
-            onClick={() => setCurrentStep((p) => Math.min(p + 1, 6))}
+            onClick={() => {
+              console.log("tipoSolicitud:", tipoSolicitud);
+              console.log("plazasDisponibles desde padre:", plazasDisponibles);
+              if(currentStep === 2 && !plazasDisponibles && tipoSolicitud === "nueva") {
+                setCurrentStep(4);
+            } else if (currentStep === 2 && !plazasDisponibles && tipoSolicitud === "modificación") {
+              setCurrentStep(5);
+            }else if(currentStep === 3 && tipoSolicitud === "modificación") {
+              setCurrentStep(5);
+            } else if(currentStep === 4 && tipoSolicitud === "nueva"){
+              setCurrentStep(6);
+            }else {
+            setCurrentStep((p) => Math.min(p + 1, 6));
+          }
+          }}
             className={`flex items-center gap-2 text-white text-sm font-semibold px-6 py-2 rounded-lg transition 
               ${isValid ? "bg-green-800 hover:bg-green-900" : "bg-gray-400 cursor-not-allowed"}`}
           >

@@ -15,6 +15,10 @@ export default function DashboardPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isValid, setIsValid] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [plazasDisponibles, setPlazasDisponibles] = useState<boolean>(true);
+  const [tipoSolicitud, setTipoSolicitud] = useState<string>("");
+
+
 
   const [uploadFiles, setUploadFiles] = useState<{ [key: string]: File | null }>({
     "Aval del Consejo de Unidad Académica": null,
@@ -30,9 +34,11 @@ export default function DashboardPage() {
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
-        return <Information onValidate={setIsValid} />;
+        return <Information onValidate={setIsValid} onTipoSolicitudChange={setTipoSolicitud}/>;
       case 2:
-        return <Description onValidate={setIsValid} />;
+        return <Description onValidate={setIsValid} 
+            onPlazasDisponiblesChange={setPlazasDisponibles}
+        />;
       case 3:
         return <Cohort onValidate={setIsValid} />;
       case 4:
@@ -46,7 +52,7 @@ export default function DashboardPage() {
     }
   };
 
-  // ✅ CORREGIDO: handleSubmit sin useState dentro
+  // handleSubmit sin useState dentro
   const handleSubmit = async () => {
     try {
       const information = JSON.parse(localStorage.getItem("formInformation") || "{}");
@@ -151,6 +157,8 @@ export default function DashboardPage() {
               isValid={isValid}
               onSubmit={handleSubmit}
               onSave={handleSaveDocuments}
+              plazasDisponibles={plazasDisponibles}
+              tipoSolicitud={tipoSolicitud}
             />
           </div>
         </main>

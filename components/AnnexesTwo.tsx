@@ -79,26 +79,26 @@ export default function UploadSection({ onValidate }: UploadSectionProps) {
 
       {/* Campos de subida de archivos */}
       <FileUploadField
-        label="Acta de aprobación del comité de ética"
+        label="Aval del Consejo de Unidad Académica"
         required
         onFileSelect={(file) =>
-          handleFileSelect("Acta de aprobación del comité de ética", file)
+          handleFileSelect("Aval del Consejo de Unidad Académica", file)
         }
       />
 
       <FileUploadField
-        label="Carta de aceptación del asesor"
+        label="Aval del estudio de costos de la Vicerrectoría de Investigación"
         required
         onFileSelect={(file) =>
-          handleFileSelect("Carta de aceptación del asesor", file)
+          handleFileSelect("Aval del estudio de costos de la Vicerrectoría de Investigación", file)
         }
       />
 
       <FileUploadField
-        label="Documento de viabilidad financiera"
+        label="Autoevaluación del programa"
         required
         onFileSelect={(file) =>
-          handleFileSelect("Documento de viabilidad financiera", file)
+          handleFileSelect("Autoevaluación del programa", file)
         }
       />
     </div>

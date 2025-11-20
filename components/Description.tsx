@@ -16,12 +16,13 @@ type FormData = {
 
 interface DescriptionProps {
   onValidate: (isValid: boolean) => void;
+  onPlazasDisponiblesChange?: (isPlazas: boolean) => void;
 }
 
 const LOCAL_STORAGE_KEY = "formDescription";
 
-export default function Description({ onValidate }: DescriptionProps) {
-  // ✅ Cargar desde localStorage
+export default function Description({ onValidate, onPlazasDisponiblesChange }: DescriptionProps) {
+  // Cargar desde localStorage
   const [formData, setFormData] = useState<FormData>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -70,7 +71,13 @@ export default function Description({ onValidate }: DescriptionProps) {
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      const updatedForm = { ...prev, [name]: value };
+      if (name === "plazasDisponibles") {
+        onPlazasDisponiblesChange?.(value === "Sí");
+      }
+      return updatedForm;
+    });   
   };
 
   return (

@@ -35,41 +35,7 @@ export default function Sidebar() {
             <span className="flex items-center gap-2">
               <Users size={18} /> Inicio
             </span>
-            {openMenu === "inicio" ? (
-              <ChevronUp size={18} />
-            ) : (
-              <ChevronDown size={18} />
-            )}
           </button>
-
-          {openMenu === "inicio" && (
-            <ul className="pl-8 mt-1 space-y-1">
-              <li>
-                <a
-                  href="#"
-                  className="block px-2 py-1 text-sm text-gray-600 hover:text-gray-800"
-                >
-                  Sub menú 1
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="block px-2 py-1 text-sm text-gray-600 hover:text-gray-800"
-                >
-                  Sub menú 2
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="block px-2 py-1 text-sm text-gray-600 hover:text-gray-800"
-                >
-                  Sub menú 3
-                </a>
-              </li>
-            </ul>
-          )}
         </div>
 
         {/* MENU: Account */}
@@ -150,14 +116,6 @@ export default function Sidebar() {
                   className="block px-2 py-1 text-sm text-gray-600 hover:text-gray-800"
                 >
                   Ver inscripciones
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="block px-2 py-1 text-sm text-gray-600 hover:text-gray-800"
-                >
-                  Reportes
                 </a>
               </li>
             </ul>
