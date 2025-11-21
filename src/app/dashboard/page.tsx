@@ -10,6 +10,10 @@ import UploadSection2 from "../../../components/AnnexesTwo";
 import SendStep from "../../../components/Send";
 import Sidebar from "../../../components/Sidebar";
 import StepsButtons from "../../../components/StepsButtons";
+import Home from "../../../components/Home";
+import Filter from "../../../components/Filter";
+import Calendar from "../../../components/Calendar";
+
 
 export default function DashboardPage() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -17,8 +21,7 @@ export default function DashboardPage() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [plazasDisponibles, setPlazasDisponibles] = useState<boolean>(true);
   const [tipoSolicitud, setTipoSolicitud] = useState<string>("");
-
-
+  const [selectedView, setSelectedView] = useState("inicio");
 
   const [uploadFiles, setUploadFiles] = useState<{ [key: string]: File | null }>({
     "Aval del Consejo de Unidad Académica": null,
@@ -51,6 +54,53 @@ export default function DashboardPage() {
         return null;
     }
   };
+
+  const renderMainView = () => {
+  switch (selectedView) {
+    case "inicio":
+      return <Home/>;
+
+    case "nueva-inscripcion":
+      return (
+        <>
+          <ProgressBar compact currentStep={currentStep} setCurrentStep={setCurrentStep} />
+
+          <div className="absolute top-28 left-0 right-0 bottom-20 px-6">
+            <div
+              ref={scrollRef}
+              className="w-full h-full bg-white rounded-xl shadow p-8 overflow-y-auto"
+            >
+              {renderStepContent()}
+            </div>
+          </div>
+
+          <div className="fixed bottom-0 left-64 right-0 bg-white shadow-inner z-30">
+            <StepsButtons
+              currentStep={currentStep}
+              setCurrentStep={setCurrentStep}
+              isValid={isValid}
+              onSubmit={handleSubmit}
+              onSave={handleSaveDocuments}
+              plazasDisponibles={plazasDisponibles}
+              tipoSolicitud={tipoSolicitud}
+            />
+          </div>
+        </>
+      );
+    case "ver-inscripciones":
+      return <Filter/>;
+
+    case "calendario":
+      return <Calendar />;
+
+    case "documentacion":
+      return <p className="text-xl">Ajustes de cuenta</p>;
+
+    default:
+      return null;
+  }
+};
+
 
   // handleSubmit sin useState dentro
   const handleSubmit = async () => {
@@ -140,27 +190,11 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="fixed top-0 left-0 bottom-0 w-64 z-40">
-        <Sidebar />
+        <Sidebar onSelectView={setSelectedView} />
       </div>
       <div className="ml-64 flex-1 relative">
         <main className="p-4 min-h-screen relative">
-          <ProgressBar compact currentStep={currentStep} setCurrentStep={setCurrentStep} />
-          <div className="absolute top-28 left-0 right-0 bottom-20 z-10 px-6">
-            <div ref={scrollRef} className="w-full h-full bg-white rounded-xl shadow p-8 overflow-y-auto">
-              {renderStepContent()}
-            </div>
-          </div>
-          <div className="fixed bottom-0 left-64 right-0 z-30 bg-white shadow-inner">
-            <StepsButtons
-              currentStep={currentStep}
-              setCurrentStep={setCurrentStep}
-              isValid={isValid}
-              onSubmit={handleSubmit}
-              onSave={handleSaveDocuments}
-              plazasDisponibles={plazasDisponibles}
-              tipoSolicitud={tipoSolicitud}
-            />
-          </div>
+          {renderMainView()}
         </main>
       </div>
     </div>
