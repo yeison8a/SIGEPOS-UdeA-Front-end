@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { GraduationCap, ClipboardList, Calendar, ArrowRight } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 
 export default function Home() {
   return (
@@ -17,76 +17,43 @@ export default function Home() {
           <GraduationCap size={40} /> Bienvenido a SIGEPOS
         </h1>
         <p className="text-lg text-green-800 mt-2">
-          Sistema de Gestión de Inscripciones – Universidad de Antioquia 🍃
+          Sistema de Gestión de Inscripciones – Universidad de Antioquia 
         </p>
       </motion.div>
 
-      {/* GRID DE OPCIONES */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+      {/* DESCRIPCIÓN + IMAGEN */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="mt-12 p-10 bg-white rounded-2xl shadow-md border border-green-200 flex flex-col md:flex-row items-center gap-10"
+      >
+        
+        {/* IMAGEN IZQUIERDA */}
+        <motion.img
+          src="/udea.jpg"  
+          alt="Ilustración SIGEPOS"
+          className="w-72 md:w-96 rounded-xl shadow-md"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+        />
 
-        {/* CARD 1 */}
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          className="p-6 bg-white rounded-2xl shadow-md border border-green-200 hover:shadow-xl transition cursor-pointer"
-        >
-          <div className="bg-green-100 w-14 h-14 flex items-center justify-center rounded-xl">
-            <ClipboardList size={32} className="text-green-700" />
-          </div>
-          <h2 className="text-2xl text-green-700 font-semibold mt-4">
-            Nueva inscripción
+        {/* DESCRIPCIÓN */}
+        <div>
+          <h2 className="text-3xl font-semibold text-green-700 mb-4">
+            ¿Qué es SIGEPOS?
           </h2>
-          <p className="text-green-600 mt-2">
-            Inicia tu proceso de inscripción en pocos pasos.
+
+          <p className="text-green-800 leading-relaxed text-lg">
+            SIGEPOS es una plataforma que centraliza y automatiza el proceso de
+            inscripción a programas de posgrado, permitiendo a los aspirantes
+            diligenciar formularios, cargar documentos y gestionar su proceso de manera
+            clara, moderna y eficiente.
           </p>
+        </div>
+      </motion.div>
 
-          <div className="mt-4 flex items-center text-green-700 font-medium">
-            Ingresar <ArrowRight className="ml-2" />
-          </div>
-        </motion.div>
-
-        {/* CARD 2 */}
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          className="p-6 bg-white rounded-2xl shadow-md border border-green-200 hover:shadow-xl transition cursor-pointer"
-        >
-          <div className="bg-green-100 w-14 h-14 flex items-center justify-center rounded-xl">
-            <GraduationCap size={32} className="text-green-700" />
-          </div>
-          <h2 className="text-2xl text-green-700 font-semibold mt-4">
-            Inscripciones activas
-          </h2>
-          <p className="text-green-600 mt-2">
-            Consulta el estado y progreso de tus solicitudes.
-          </p>
-
-          <div className="mt-4 flex items-center text-green-700 font-medium">
-            Ver inscripciones <ArrowRight className="ml-2" />
-          </div>
-        </motion.div>
-
-        {/* CARD 3 */}
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          className="p-6 bg-white rounded-2xl shadow-md border border-green-200 hover:shadow-xl transition cursor-pointer"
-        >
-          <div className="bg-green-100 w-14 h-14 flex items-center justify-center rounded-xl">
-            <Calendar size={32} className="text-green-700" />
-          </div>
-          <h2 className="text-2xl text-green-700 font-semibold mt-4">
-            Calendario académico
-          </h2>
-          <p className="text-green-600 mt-2">
-            Fechas clave del proceso de admisiones.
-          </p>
-
-          <div className="mt-4 flex items-center text-green-700 font-medium">
-            Ver calendario <ArrowRight className="ml-2" />
-          </div>
-        </motion.div>
-
-      </div>
-
-      {/* FOOTER DECORATIVO */}
+      {/* FOOTER */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -96,7 +63,6 @@ export default function Home() {
           Universidad de Antioquia • Facultad de Ingeniería • © {new Date().getFullYear()}
         </p>
       </motion.div>
-
     </div>
   );
 }
